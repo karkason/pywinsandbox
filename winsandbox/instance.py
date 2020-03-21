@@ -1,7 +1,9 @@
-from .config.config_genereator import generate_config_file
-from .folder_mapper import PythonMapper, FolderMapper
 from .utils.file import watch_file
 from .utils.path import shared_folder_path_in_sandbox
+from .utils import dev_environment
+
+from .folder_mapper import PythonMapper, FolderMapper
+from .config.config_genereator import generate_config_file
 
 import multiprocessing.connection
 import copy
@@ -53,19 +55,40 @@ class SandboxInstance:
         if not self.sandbox_config.networking:
             return self.sandbox_config.logon_script
 
-        return '"{}" -m winsandbox.target {}'.format(
+        # Launch the target script.
+        networking_logon_script = '"{}" -m winsandbox.target {}'.format(
             shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
             str(server_address_path))
+
+        if dev_environment.is_dev_environment():
+            print("wat")
+            # If we're in a dev environment we create the directory chain up to the egglink,
+            # and then symlink the egglink to the mapped shared folder path.
+            networking_logon_script = 'cmd /c mkdir {} & mklink /D {} {} & {}'.format(
+                dev_environment.get_egglink_path().parent,
+                dev_environment.get_egglink_path(),
+                shared_folder_path_in_sandbox(dev_environment.get_egglink_path()),
+                networking_logon_script
+            )
+
+        print(networking_logon_script)
+        return networking_logon_script
 
     def _run(self):
         shared_directory = tempfile.mkdtemp(prefix='shared_dir')
         server_address_path = pathlib.Path(shared_directory) / 'server_address'
         server_address_path_in_sandbox = shared_folder_path_in_sandbox(shared_directory) / 'server_address'
 
+        extra_folder_mappers = [FolderMapper(shared_directory, read_only=False)]
+
+        if dev_environment.is_dev_environment():
+            # Let's map the egg link to the sandbox if we're in a dev environment.
+            extra_folder_mappers.append(FolderMapper(dev_environment.get_egglink_path()))
+
         with tempfile.NamedTemporaryFile() as temp:
             config_file_path = pathlib.Path(temp.name).with_suffix(WINDOWS_SANDBOX_CONFIG_FILE_SUFFIX)
             print(self._generate_config_file(path=config_file_path,
-                                             extra_folder_mappers=[FolderMapper(shared_directory, read_only=False)],
+                                             extra_folder_mappers=extra_folder_mappers,
                                              logon_script=self._get_logon_script(server_address_path_in_sandbox)))
 
             self.sandbox_process = subprocess.Popen(['start', str(config_file_path)],
