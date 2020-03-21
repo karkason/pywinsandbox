@@ -1,14 +1,14 @@
 from .config.config_genereator import generate_config_file
-from .session import target_connector
+from .session import connector
 
 import copy
 import subprocess
 
+
 class SandboxInstance:
     def __init__(self, sandbox_config):
         self.sandbox_config = sandbox_config
-        self.sandbox_process = None
-        self.connection = target_connector.NetworkedConnector(self).connect()
+        self.connection = connector.get_connector(self).connect()
 
     def generate_config_file(self,
                              logon_script,
@@ -24,5 +24,5 @@ class SandboxInstance:
         return config_xml
 
     def start_sandbox(self, config_file_path):
-        self.sandbox_process = subprocess.Popen(['start', config_file_path],
-                                                shell=True)
+        subprocess.Popen(['start', config_file_path],
+                         shell=True)
