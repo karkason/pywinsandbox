@@ -10,7 +10,7 @@ def _format_folder_mappers(folder_mappers, tag, text):
         for folder_mapper in folder_mappers:
             with tag('MappedFolder'):
                 with tag('HostFolder'):
-                    text(str(folder_mapper.path().resolve()))
+                    text(str(folder_mapper.path()))
                 with tag('ReadOnly'):
                     text(str(folder_mapper.read_only()).lower())
 

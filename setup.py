@@ -22,12 +22,13 @@ setup(name='pywinsandbox',
       zip_safe=False,
       install_requires=[
             'yattag',
+            'netifaces',
       ],
       extras_require={
           'test': ['pytest'],
       },
       entry_points="""
       [console_scripts]
-      #pywinsandbox=pywinsandbox.scripts.cli:cli
+      winsandbox.target=winsandbox.target.main:main
       """
       )
