@@ -1,2 +1,2 @@
-# windows-sandbox
-Windows Sandbox Utillities Python Package
+# pywinsandbox
+Windows Sandbox Utilities Python Package
