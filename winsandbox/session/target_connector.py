@@ -5,13 +5,12 @@ from ..utils import dev_environment
 from ..folder_mapper import PythonMapper, FolderMapper
 from .no_network_connector import NoNetworkConnector
 
-import multiprocessing.connection
 import tempfile
 import pathlib
 import socket
 import os
 
-WINDOWS_SANDBOX_CONFIG_FILE_SUFFIX = '.wsb'
+WINDOWS_config_FILE_SUFFIX = '.wsb'
 
 
 class ServerNotResponding(Exception):
@@ -35,8 +34,7 @@ def _connect_to_sandbox(server_address_path, timeout=60):
     if not _is_server_responding(address, int(port)):
         raise ServerNotResponding()
 
-    connection = multiprocessing.connection.Client((address, int(port)), authkey=b'handshake')
-    return connection
+    return address, int(port)
 
 
 def _get_shared_directory():
@@ -50,11 +48,11 @@ def _get_shared_directory():
 class NetworkedConnector:
     def __init__(self, sandbox_instance):
         self.instance = sandbox_instance
-        assert self.instance.sandbox_config.networking, "Networking not configured with a networked connector."
+        assert self.instance.config.networking, "Networking not configured with a networked connector."
 
     def _get_logon_script(self, server_address_path):
         # Launch the target script.
-        networking_logon_script = '"{}" -m winsandbox.target {}'.format(
+        networking_logon_script = '"{}" -m winsandbox.target --disable-firewall {}'.format(
             shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
             str(server_address_path))
 
@@ -70,7 +68,12 @@ class NetworkedConnector:
 
         return networking_logon_script
 
-    def connect(self):
+    def connect(self, launch_new_instance_if_needed):
+        """
+        Establishes a new sandbox ready for an RPyC connection.
+        Returns the connection tuple (address, port).
+        """
+
         shared_directory = _get_shared_directory()
         server_address_path = pathlib.Path(shared_directory) / 'server_address'
         server_address_path_in_sandbox = shared_folder_path_in_sandbox(shared_directory) / 'server_address'
@@ -86,6 +89,9 @@ class NetworkedConnector:
             except FileNotFoundError:
                 pass
 
+            if not launch_new_instance_if_needed:
+                raise ServerNotResponding("Sandbox is not currently running.")
+
         extra_folder_mappers = [FolderMapper(shared_directory, read_only=False)]
         if dev_environment.is_dev_environment():
             # Let's map the egg link to the sandbox if we're in a dev environment.
@@ -96,5 +102,5 @@ class NetworkedConnector:
         # And start the sandbox.
         NoNetworkConnector(self.instance).connect(logon_script, extra_folder_mappers)
 
-        if self.instance.sandbox_config.networking:
+        if self.instance.config.networking:
             return _connect_to_sandbox(server_address_path)

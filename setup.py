@@ -22,7 +22,8 @@ setup(name='pywinsandbox',
       zip_safe=False,
       install_requires=[
             'yattag',
-            'netifaces',
+            'rpyc',
+            'cached-property',
       ],
       extras_require={
           'test': ['pytest'],
