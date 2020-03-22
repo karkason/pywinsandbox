@@ -24,12 +24,13 @@ setup(name='pywinsandbox',
             'yattag',
             'rpyc',
             'cached-property',
+            'recordclass',
       ],
       extras_require={
           'test': ['pytest'],
       },
       entry_points="""
       [console_scripts]
-      winsandbox.target=winsandbox.target.main:main
+      winsandbox.targets=winsandbox.targets.main:main
       """
       )

@@ -2,7 +2,7 @@ import os
 import time
 
 
-def watch_file(filename, timeout=60, check_interval=1):
+def wait_for_file_creation(filename, timeout=25, check_interval=1):
     """
     Return true if filename exists, if not keep checking once every check_interval seconds for time_limit seconds.
     """

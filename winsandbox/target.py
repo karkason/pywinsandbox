@@ -1,3 +1,8 @@
+"""
+This script is the RPyC server that is uploaded to the Windows Sandbox.
+It boots up the server, writes the IP:port data to a shared file and starts accepting connections.
+"""
+
 import argparse
 from pathlib import Path
 import socket
@@ -26,7 +31,6 @@ def get_ip_address():
 
 
 def main():
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("address_path",
                         type=lambda p: Path(p))

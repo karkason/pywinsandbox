@@ -1,5 +1,7 @@
 import yattag
 
+from .config import SandboxConfig
+
 
 def _get_boolean_text(value):
     return 'Default' if value else 'Disabled'
@@ -15,20 +17,20 @@ def _format_folder_mappers(folder_mappers, tag, text):
                     text(str(folder_mapper.read_only()).lower())
 
 
-def generate_config_file(vgpu_enabled, networking_enabled, folder_mappers, logon_command):
+def generate_config_file(config):
     document, tag, text = yattag.Doc().tagtext()
 
     with tag('Configuration'):
         with tag('VGpu'):
-            text(_get_boolean_text(vgpu_enabled))
+            text(_get_boolean_text(config.virtual_gpu))
 
         with tag('Networking'):
-            text(_get_boolean_text(networking_enabled))
+            text(_get_boolean_text(config.networking))
 
         with tag('LogonCommand'):
             with tag('Command'):
-                text(logon_command)
+                text(config.logon_script)
 
-        _format_folder_mappers(folder_mappers, tag, text)
+        _format_folder_mappers(config.folder_mappers, tag, text)
 
     return yattag.indent(document.getvalue())

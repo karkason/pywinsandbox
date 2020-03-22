@@ -1,10 +1,5 @@
 import sys
-import os
-
-try:
-    import pathlib
-except ImportError:
-    import pathlib2 as pathlib
+import pathlib
 
 
 class FolderMapper:
@@ -24,6 +19,10 @@ class FolderMapper:
 
 
 class PythonMapper:
+    """
+    Maps the current Python installation to the new sandbox.
+    """
+
     def path(self):
         return pathlib.Path(sys.executable).parent
 

@@ -1,37 +1,48 @@
-from .folder_mapper import PythonMapper
-from .instance import SandboxInstance
+from .config.config_genereator import generate_config_file
+from .session import offline_session, online_session
 
-from collections import namedtuple
+import copy
+import subprocess
+import cached_property
+import rpyc
 from warnings import warn_explicit
 
-_DEFAULT_FOLDER_MAPPERS = [PythonMapper()]
-SandboxConfig = namedtuple("SandboxConfig", ['folder_mappers', 'networking', 'logon_script', 'virtual_gpu'])
+
+class OfflineSandbox:
+    def __init__(self, config):
+        self.config = config
+        offline_session.OfflineSession(self).run()
+
+    @staticmethod
+    def start_sandbox(config_file_path):
+        subprocess.Popen(['start', config_file_path],
+                         shell=True)
 
 
-def new_sandbox(folder_mappers=None, networking=True, logon_script="", virtual_gpu=True):
-    """
-    Create a new sandbox or connect to an existing running instance.
-    """
+class OnlineSandbox:
+    def __init__(self, config, launch_new_instance=True):
+        self.config = config
 
-    if networking and len(logon_script) != 0:
-        warn_explicit("Logon scripts are ignored when the sandbox has networking enabled.")
+        assert config.networking, "Networking not configured with an online sandbox."
+        if len(self.config.logon_script) != 0:
+            warn_explicit("Logon scripts are ignored when the sandbox has networking enabled.")
 
-    folder_mappers = folder_mappers or []
-    folder_mappers.extend(_DEFAULT_FOLDER_MAPPERS)
+        session = online_session.OnlineSession(self)
 
-    return SandboxInstance(config=SandboxConfig(folder_mappers=folder_mappers,
-                                                networking=networking,
-                                                logon_script=logon_script,
-                                                virtual_gpu=virtual_gpu))
+        # Try to connect to an already running server.
+        self._connection_tuple = session.running_sandbox_server_information(launch_new_instance)
 
+        # Server is down, let's boot the sandbox.
+        if self._connection_tuple is None:
+            session.configure_sandbox()
+            OfflineSandbox(self.config)
 
-def connect_to_sandbox():
-    """
-    Connect to an existing running sandbox.
-    """
+        # And get the new sandbox connection tuple.
+        self._connection_tuple = session.connect_to_sandbox()
 
-    return SandboxInstance(config=SandboxConfig(folder_mappers=None,
-                                                networking=True,
-                                                logon_script="",
-                                                virtual_gpu=True),
-                           launch_new_instance_if_needed=False)
+    @cached_property.cached_property
+    def rpyc(self):
+        assert self.config.networking, "Networking is not enabled in this Sandbox."
+
+        if self._connection_tuple is not None:
+            return rpyc.classic.connect(*self._connection_tuple)
