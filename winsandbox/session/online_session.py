@@ -38,10 +38,8 @@ class OnlineSession:
         self.server_address_path_in_sandbox = shared_folder_path_in_sandbox(self.shared_directory) / 'server_address'
 
     def _get_logon_script(self, server_address_path):
-        # Launch the targets script.
-        networking_logon_script = 'start "winsandbox.target" "{}" -m winsandbox.target --disable-firewall {}'.format(
-            shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
-            str(server_address_path))
+        
+        commands = []
 
         if dev_environment.is_dev_environment():
             # If we're in a dev environment we create the intermediate directory up to the egglink,
@@ -50,17 +48,20 @@ class OnlineSession:
             if dev_environment.get_egglink_path().drive != 'C:':
                 # Handle this bizarre case by mapping a virtual drive from the actual drive letter to C:.
                 # We'll then symlink the real development path to the shared folder on the desktop.
-                networking_logon_script = 'cmd /c subst {} C:\\ & {}'.format(dev_environment.get_egglink_path().drive,
-                                                                             networking_logon_script)
+                commands.append('subst {} C:\\'.format(dev_environment.get_egglink_path().drive))
 
-            networking_logon_script = 'cmd /c mkdir {} & mklink /D {} {} & {}'.format(
-                dev_environment.get_egglink_path().parent,
+            commands.append('mkdir {}'.format(dev_environment.get_egglink_path().parent))
+
+            commands.append('mklink /D {} {}'.format(
                 dev_environment.get_egglink_path(),
-                shared_folder_path_in_sandbox(dev_environment.get_egglink_path()),
-                networking_logon_script
-            )
+                shared_folder_path_in_sandbox(dev_environment.get_egglink_path())))
 
-        return networking_logon_script
+        # Launch the targets script.
+        commands.append(r'{} -m winsandbox.target --disable-firewall {}'.format(
+            shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
+            str(server_address_path)))
+
+        return 'cmd.exe /c "{}"'.format(' && '.join(commands))
 
     def running_sandbox_server_information(self, allow_new_instance=False):
         """
@@ -93,7 +94,7 @@ class OnlineSession:
         self.sandbox.config.logon_script = self._get_logon_script(self.server_address_path_in_sandbox)
         self.sandbox.config.folder_mappers.extend(extra_folder_mappers)
 
-    def connect_to_sandbox(self, timeout=25):
+    def connect_to_sandbox(self, timeout=30):
         """
         Connect to the sandbox sever.
         Waits for the creation of the shared server address file, and checks that it responds.
