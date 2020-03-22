@@ -46,6 +46,13 @@ class OnlineSession:
         if dev_environment.is_dev_environment():
             # If we're in a dev environment we create the intermediate directory up to the egglink,
             # and then symlink the egglink to the mapped shared folder path.
+
+            if dev_environment.get_egglink_path().drive != 'C:':
+                # Handle this bizarre case by mapping a virtual drive from the actual drive letter to C:.
+                # We'll then symlink the real development path to the shared folder on the desktop.
+                networking_logon_script = 'cmd /c subst {} C:\\ & {}'.format(dev_environment.get_egglink_path().drive,
+                                                                             networking_logon_script)
+
             networking_logon_script = 'cmd /c mkdir {} & mklink /D {} {} & {}'.format(
                 dev_environment.get_egglink_path().parent,
                 dev_environment.get_egglink_path(),
