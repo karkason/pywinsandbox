@@ -52,7 +52,7 @@ class NetworkedConnector:
 
     def _get_logon_script(self, server_address_path):
         # Launch the target script.
-        networking_logon_script = '"{}" -m winsandbox.target --disable-firewall {}'.format(
+        networking_logon_script = 'start "winsandbox.target" "{}" -m winsandbox.target --disable-firewall {}'.format(
             shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
             str(server_address_path))
 
