@@ -1,0 +1,36 @@
+import yattag
+
+from .config import SandboxConfig
+
+
+def _get_boolean_text(value):
+    return 'Default' if value else 'Disabled'
+
+
+def _format_folder_mappers(folder_mappers, tag, text):
+    with tag('MappedFolders'):
+        for folder_mapper in folder_mappers:
+            with tag('MappedFolder'):
+                with tag('HostFolder'):
+                    text(str(folder_mapper.path()))
+                with tag('ReadOnly'):
+                    text(str(folder_mapper.read_only()).lower())
+
+
+def generate_config_file(config):
+    document, tag, text = yattag.Doc().tagtext()
+
+    with tag('Configuration'):
+        with tag('VGpu'):
+            text(_get_boolean_text(config.virtual_gpu))
+
+        with tag('Networking'):
+            text(_get_boolean_text(config.networking))
+
+        with tag('LogonCommand'):
+            with tag('Command'):
+                text(config.logon_script)
+
+        _format_folder_mappers(config.folder_mappers, tag, text)
+
+    return yattag.indent(document.getvalue())
