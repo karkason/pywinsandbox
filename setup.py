@@ -30,6 +30,7 @@ setup(name='pywinsandbox',
       },
       entry_points="""
       [console_scripts]
-      winsandbox.target=winsandbox.target:main
+      winsandbox=winsandbox.cli:main
+      wsb=winsandbox.cli:main
       """
       )

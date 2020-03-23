@@ -38,3 +38,15 @@ tree = sandbox.rpyc.modules.subprocess.check_output(r'cmd /c tree %userprofile%\
 # Create an offline sandbox with a logon script.
 sandbox = winsandbox.new_sandbox(networking=False, logon_script="explorer .")
 ```
+
+Also a console script is available:
+
+```sh
+# wsb / winsandbox are aliases
+
+# Create an interactive sandbox session. Spawns an IPython shell.
+wsb -i
+
+# Spawn an "offline" Windows Sandbox instance, with a command line.
+wsb -s "explorer C:\windows\system32" 
+```

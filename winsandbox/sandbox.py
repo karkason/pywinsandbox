@@ -42,7 +42,31 @@ class OnlineSandbox:
 
     @cached_property.cached_property
     def rpyc(self):
+        """
+        RPyC connection to the sandbox.
+        """
+
         assert self.config.networking, "Networking is not enabled in this Sandbox."
 
         if self._connection_tuple is not None:
             return rpyc.classic.connect(*self._connection_tuple)
+
+    def run_executable(self, executable_args, *args, **kwargs):
+        """
+        Run an executable in the sandbox.
+        :param executable_args: The executable arguments to run.
+        :param args: Extra arguments to `subprocess.Popen`.
+        :param kwargs: Extra kwargs to `subprocess.Popen`.
+        :return: a remote `subprocess.Popen` instance.
+        """
+
+        kwargs['stdout'] = kwargs.pop('stdout', subprocess.PIPE)
+        kwargs['stderr'] = kwargs.pop('stderr', subprocess.PIPE)
+        return self.rpyc.modules.subprocess.Popen(executable_args, *args, **kwargs)
+
+    def shutdown(self):
+        """
+        Shutdown the sandbox.
+        """
+
+        self.run_executable(['shutdown.exe', '/s', '/t', '0'])
