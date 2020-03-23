@@ -6,7 +6,7 @@ with codecs_open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='pywinsandbox',
-      version='0.0.2',
+      version='0.0.3',
       description=u"Python Utilities for Windows Sandbox",
       long_description=long_description,
       long_description_content_type='text/markdown',
