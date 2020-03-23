@@ -2,6 +2,8 @@
 Python [Windows Sandbox](https://techcommunity.microsoft.com/t5/windows-kernel-internals/windows-sandbox/ba-p/301849) library.
 Create a new Windows Sandbox machine, control it with a simple RPyC interface.
 
+A good usage for this library would be to easily run sandboxed tests in a controlled envionment.
+
 Examples
 -------
 
