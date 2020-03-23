@@ -1,7 +1,5 @@
 import yattag
 
-from .config import SandboxConfig
-
 
 def _get_boolean_text(value):
     return 'Default' if value else 'Disabled'
