@@ -4,6 +4,23 @@ Create a new Windows Sandbox machine, control it with a simple RPyC interface.
 
 A good usage for this library would be to easily run sandboxed tests in a controlled envionment.
 
+Quick Start
+------------
+
+PyWinSandbox can be installed using pip:
+
+```sh
+$ python3 -m pip install -U mypy
+```
+
+If you want to run the latest version of the code, you can install from git:
+
+```sh
+$ python3 -m pip install -U git+git://github.com/python/mypy.git
+```
+
+Note that the Windows Sandbox should be enabled in your system in order to use PyWinSandbox. [See the following Microsoft article on how to do that.](https://techcommunity.microsoft.com/t5/windows-kernel-internals/windows-sandbox/ba-p/301849)
+
 Examples
 -------
 
