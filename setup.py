@@ -24,6 +24,7 @@ setup(name='pywinsandbox',
           'rpyc',
           'cached-property',
           'recordclass',
+          'IPython',
       ],
       extras_require={
           'test': ['pytest'],
