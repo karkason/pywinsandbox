@@ -38,7 +38,6 @@ class OnlineSession:
         self.server_address_path_in_sandbox = shared_folder_path_in_sandbox(self.shared_directory) / 'server_address'
 
     def _get_logon_script(self, server_address_path):
-        
         commands = []
 
         if dev_environment.is_dev_environment():
@@ -56,7 +55,7 @@ class OnlineSession:
                 dev_environment.get_egglink_path(),
                 shared_folder_path_in_sandbox(dev_environment.get_egglink_path())))
 
-        # Launch the targets script.
+        # Launch the target script.
         commands.append(r'{} -m winsandbox.target --disable-firewall {}'.format(
             shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
             str(server_address_path)))

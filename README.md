@@ -10,13 +10,13 @@ Quick Start
 PyWinSandbox can be installed using pip:
 
 ```sh
-$ python3 -m pip install -U mypy
+$ python3 -m pip install -U pywinsandbox
 ```
 
 If you want to run the latest version of the code, you can install from git:
 
 ```sh
-$ python3 -m pip install -U git+git://github.com/python/mypy.git
+$ python3 -m pip install -U git+git://github.com/karkason/pywinsandbox.git
 ```
 
 Note that the Windows Sandbox should be enabled in your system in order to use PyWinSandbox. [See the following Microsoft article on how to do that.](https://techcommunity.microsoft.com/t5/windows-kernel-internals/windows-sandbox/ba-p/301849)
@@ -37,4 +37,16 @@ tree = sandbox.rpyc.modules.subprocess.check_output(r'cmd /c tree %userprofile%\
 
 # Create an offline sandbox with a logon script.
 sandbox = winsandbox.new_sandbox(networking=False, logon_script="explorer .")
+```
+
+Also a console script is available:
+
+```sh
+# wsb / winsandbox are aliases
+
+# Create an interactive sandbox session. Spawns an IPython shell.
+wsb -i
+
+# Spawn an "offline" Windows Sandbox instance, with a command line.
+wsb -s "explorer C:\windows\system32" 
 ```
