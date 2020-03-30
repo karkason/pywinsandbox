@@ -50,3 +50,13 @@ wsb -i
 # Spawn an "offline" Windows Sandbox instance, with a command line.
 wsb -s "explorer C:\windows\system32" 
 ```
+
+A shell extension is available to easily sandbox executables with the right click menu:
+```sh
+# Run these commands with Administrator privileges
+
+# Register the shell extension
+wsb -r
+# Unregister the shell extension
+wsb -u
+```
