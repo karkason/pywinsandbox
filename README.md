@@ -51,7 +51,12 @@ wsb -i
 wsb -s "explorer C:\windows\system32" 
 ```
 
-A shell extension is available to easily sandbox executables with the right click menu:
+Windows Shell Extension
+-------
+A shell extension is also available to easily sandbox executables with the right click menu:
+
+![Shell Extension](https://i.imgur.com/OieNw5D.png)
+
 ```sh
 # Run these commands with Administrator privileges
 
