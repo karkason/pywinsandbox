@@ -28,35 +28,34 @@ def read_args():
     return parser.parse_args()
 
 
-def register_shell_extension():
-    key = winreg.CreateKeyEx(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\Open Sandboxed')
+def register_shell_extension(name, cli_flags = ''):
+    key = winreg.CreateKeyEx(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\{}'.format(name))
 
     # Calculate paths
-    repo_root_dir = pathlib.Path(__file__).absolute().parent.parent
-    shell_script_path = repo_root_dir / 'shell-extension' / 'open_sandboxed.py'
-    icon_path = repo_root_dir / 'shell-extension' / 'sandbox.ico'
+    package_root_dir = pathlib.Path(__file__).absolute().parent
+    icon_path = package_root_dir / 'shell_extension' / 'sandbox.ico'
 
     # Set icon
     winreg.SetValueEx(key, 'Icon', 0, winreg.REG_SZ, str(icon_path))
 
     # Set shell script command
     command_key = winreg.CreateKeyEx(key, 'Command')
-    command = '{} {} %1'.format(sys.executable, shell_script_path)
+    command = '{} -m winsandbox.shell_extension.open_sandboxed "%1" {}'.format(sys.executable, cli_flags)
     winreg.SetValue(command_key, None, winreg.REG_SZ, command)
 
-    print("Registered the shell extension successfully!")
+    print("Registered the '{}' shell extension successfully!".format(name))
 
 
-def unregister_shell_extension():
+def unregister_shell_extension(name):
     try:
-        winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\Open Sandboxed\Command')
+        winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\{}\Command'.format(name))
     except FileNotFoundError:
-        print("Shell extension is not registered")
+        print("Shell extension '{}' is not registered".format(name))
         return
 
-    winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\Open Sandboxed')
+    winreg.DeleteKey(winreg.HKEY_CLASSES_ROOT, r'exefile\shell\{}'.format(name))
 
-    print("Unregistered the shell extension successfully!")
+    print("Unregistered the '{}' shell extension successfully!".format(name))
 
 
 def main():
@@ -66,10 +65,12 @@ def main():
     # Handle shell extension commands
     try:
         if args.register:
-            register_shell_extension()
+            register_shell_extension('Open Sandboxed')
+            register_shell_extension('Run Sandboxed', cli_flags='--run')
             return
         elif args.unregister:
-            unregister_shell_extension()
+            unregister_shell_extension('Open Sandboxed')
+            unregister_shell_extension('Run Sandboxed')
             return
     except PermissionError:
         print("Try running again as an Administrator")
