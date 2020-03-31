@@ -32,10 +32,10 @@ def main():
 
     if args.run:
         # Run the executable
-        command = '{}'.format(sandbox_mapped_dir / executable.name)
+        command = 'cmd /c "{}"'.format(sandbox_mapped_dir / executable.name)
     else:
         # Only open mapped folder
-        command = 'explorer {}'.format(sandbox_mapped_dir)
+        command = 'explorer "{}"'.format(sandbox_mapped_dir)
 
     # Launch the sandbox
     winsandbox.new_sandbox(networking=args.network, logon_script=command, folder_mappers=[mapper])
