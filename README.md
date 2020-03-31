@@ -55,7 +55,7 @@ Windows Shell Extension
 -------
 A shell extension is also available to easily sandbox executables with the right click menu:
 
-![Shell Extension](https://i.imgur.com/OieNw5D.png)
+![Shell Extension](https://i.imgur.com/WXrE1du.png)
 
 ```sh
 # Run these commands with Administrator privileges
