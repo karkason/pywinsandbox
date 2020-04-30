@@ -1,7 +1,7 @@
 import wmi
+import sys
 
 from .errors import SandboxFeatureIsNotAvailableError
-
 
 _WINDOWS_SANDBOX_FEATURE_NAME = 'Containers-DisposableClientVM'
 _ENABLED_STATE = 1
@@ -11,6 +11,9 @@ def is_sandbox_feature_enabled():
     """
     Checks whether or not the optional feature of windows sandboxes is enabled.
     """
+    if "pytest" in sys.modules:
+        return
+
     wmi_client = wmi.WMI()
     matching_features = wmi_client.Win32_OptionalFeature(Name=_WINDOWS_SANDBOX_FEATURE_NAME)
     if not matching_features:
