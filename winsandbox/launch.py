@@ -2,6 +2,11 @@ from .utils.sandbox_feature_state import verify_sandbox_feature_is_enabled
 from .folder_mapper import PythonMapper
 from .sandbox import OnlineSandbox, OfflineSandbox
 from .config import SandboxConfig
+import sys
+
+# Do not allow importing if the feature isn't enabled
+if 'pytest' not in sys.modules:
+    verify_sandbox_feature_is_enabled()
 
 _DEFAULT_FOLDER_MAPPERS = [PythonMapper()]
 
@@ -42,7 +47,3 @@ def connect_to_sandbox():
                            logon_script="",
                            virtual_gpu=True)
     return OnlineSandbox(config, launch_new_instance=False)
-
-
-# Do not allow importing if the feature isn't enabled
-verify_sandbox_feature_is_enabled()
