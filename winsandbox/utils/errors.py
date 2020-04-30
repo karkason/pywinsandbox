@@ -21,4 +21,4 @@ class SandboxFeatureIsNotEnabledError(RuntimeError):
         super(SandboxFeatureIsNotEnabledError, self).__init__(
             'The optional feature of windows sandbox is not enabled!\n'
             'Please visit "{}"\n'
-            'for information  on how to enable it.'.format(_WINDOWS_SANDBOX_ARTICLE_LINK))
+            'for information on how to enable it.'.format(_WINDOWS_SANDBOX_ARTICLE_LINK))
