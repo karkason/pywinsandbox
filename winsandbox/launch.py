@@ -1,3 +1,4 @@
+from .utils.sandbox_feature_state import verify_sandbox_feature_is_enabled
 from .folder_mapper import PythonMapper
 from .sandbox import OnlineSandbox, OfflineSandbox
 from .config import SandboxConfig
@@ -41,3 +42,7 @@ def connect_to_sandbox():
                            logon_script="",
                            virtual_gpu=True)
     return OnlineSandbox(config, launch_new_instance=False)
+
+
+# Do not allow importing if the feature isn't enabled
+verify_sandbox_feature_is_enabled()
