@@ -1,5 +1,5 @@
 import wmi
-import sys
+import os
 
 from .errors import SandboxFeatureIsNotAvailableError
 
@@ -11,7 +11,8 @@ def is_sandbox_feature_enabled():
     """
     Checks whether or not the optional feature of windows sandboxes is enabled.
     """
-    if "pytest" in sys.modules:
+    if "PYTEST_CURRENT_TEST" in os.environ:
+        # We are running under pytest, always enable importing the library.
         return
 
     wmi_client = wmi.WMI()
