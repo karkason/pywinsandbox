@@ -1,5 +1,4 @@
 import wmi
-import sys
 
 from .errors import SandboxFeatureIsNotAvailableError
 
@@ -11,6 +10,8 @@ def is_sandbox_feature_enabled():
     """
     Checks whether or not the optional feature of windows sandboxes is enabled.
     """
+
+    import sys
     if hasattr(sys, '_called_from_test'):
         # We are running under pytest, always enable importing the library.
         return
