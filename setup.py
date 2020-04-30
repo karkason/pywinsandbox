@@ -6,7 +6,7 @@ with codecs_open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='pywinsandbox',
-      version='1.1.0',
+      version='1.2.0',
       description=u"Python Utilities for Windows Sandbox",
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -25,6 +25,7 @@ setup(name='pywinsandbox',
           'cached-property',
           'recordclass',
           'IPython',
+          'wmi'
       ],
       extras_require={
           'test': ['pytest'],
