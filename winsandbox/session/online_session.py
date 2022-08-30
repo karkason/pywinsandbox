@@ -1,13 +1,16 @@
 from ..utils.file import wait_for_file_creation
 from ..utils.path import shared_folder_path_in_sandbox
 from ..utils import dev_environment
+from ..utils import venv
 
-from ..folder_mapper import PythonMapper, FolderMapper
+from ..folder_mapper import PythonMapper, FolderMapper, PythonUserSitePackagesMapper
+from .. import target
 
 import tempfile
 import pathlib
 import socket
 import os
+import sys
 
 
 class ServerNotResponding(Exception):
@@ -55,10 +58,30 @@ class OnlineSession:
                 dev_environment.get_egglink_path(),
                 shared_folder_path_in_sandbox(dev_environment.get_egglink_path())))
 
+        if venv.is_inside_venv():
+            # If we're running in a virtual-environment we need to create a symlink between the
+            # mapped base_prefix (shared folder path) and the path that the venv expects
+            # the Python installation to be in.
+            commands.append('mklink /D "{}" "{}"'.format(
+                sys.base_prefix,
+                shared_folder_path_in_sandbox(sys.base_prefix)))
+
+        local_target_script_path = target.__file__
+        remote_target_script_path = local_target_script_path.replace(str(PythonMapper().path()), str(
+            shared_folder_path_in_sandbox(PythonMapper().path())))
+
+        remote_python_path = sys.executable.replace(str(PythonMapper().path()), str(
+            shared_folder_path_in_sandbox(PythonMapper().path())))
+
+        remote_user_site_packages_path = shared_folder_path_in_sandbox(PythonUserSitePackagesMapper().path())
+
         # Launch the target script.
-        commands.append(r'{} -m winsandbox.target --disable-firewall {}'.format(
-            shared_folder_path_in_sandbox(PythonMapper().path()) / 'python.exe',
-            str(server_address_path)))
+        commands.append(r'{} {} --disable-firewall {} {}'.format(
+            remote_python_path,
+            remote_target_script_path,
+            str(server_address_path),
+            remote_user_site_packages_path))
+        print(commands[-1])
 
         return 'cmd.exe /c "{}"'.format(' && '.join(commands))
 
@@ -89,6 +112,9 @@ class OnlineSession:
         if dev_environment.is_dev_environment():
             # Let's map the egg link to the sandbox if we're in a dev environment.
             extra_folder_mappers.append(FolderMapper(dev_environment.get_egglink_path()))
+
+        if venv.is_inside_venv():
+            extra_folder_mappers.append(FolderMapper(sys.base_prefix))
 
         self.sandbox.config.logon_script = self._get_logon_script(self.server_address_path_in_sandbox)
         self.sandbox.config.folder_mappers.extend(extra_folder_mappers)

@@ -1,5 +1,6 @@
 import sys
 import pathlib
+import site
 
 
 class FolderMapper:
@@ -24,7 +25,19 @@ class PythonMapper:
     """
 
     def path(self):
-        return pathlib.Path(sys.executable).parent
+        return pathlib.Path(sys.prefix)
+
+    def read_only(self):
+        return True
+
+
+class PythonUserSitePackagesMapper:
+    """
+    Maps the current Python installation's user site packages to the new sandbox.
+    """
+
+    def path(self):
+        return pathlib.Path(site.getusersitepackages())
 
     def read_only(self):
         return True
