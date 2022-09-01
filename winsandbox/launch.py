@@ -1,5 +1,5 @@
 from .utils.sandbox_feature_state import verify_sandbox_feature_is_enabled
-from .folder_mapper import PythonMapper
+from .folder_mapper import PythonMapper, PythonUserSitePackagesMapper
 from .sandbox import OnlineSandbox, OfflineSandbox
 from .config import SandboxConfig
 import sys
@@ -8,7 +8,7 @@ import sys
 if 'pytest' not in sys.modules:
     verify_sandbox_feature_is_enabled()
 
-_DEFAULT_FOLDER_MAPPERS = [PythonMapper()]
+_DEFAULT_FOLDER_MAPPERS = [PythonMapper(), PythonUserSitePackagesMapper()]
 
 
 def new_sandbox(folder_mappers=None, networking=True, logon_script="", virtual_gpu=True):
