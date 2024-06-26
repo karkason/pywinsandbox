@@ -16,6 +16,8 @@ def _format_folder_mappers(folder_mappers, tag, text):
 
 
 def generate_config_file(config):
+    config.folder_mappers = list(filter(lambda m: m.path().exists(), config.folder_mappers))
+
     document, tag, text = yattag.Doc().tagtext()
 
     with tag('Configuration'):
