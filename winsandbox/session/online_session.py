@@ -73,7 +73,11 @@ class OnlineSession:
         remote_python_path = sys.executable.replace(str(PythonMapper().path()), str(
             shared_folder_path_in_sandbox(PythonMapper().path())))
 
-        remote_user_site_packages_path = shared_folder_path_in_sandbox(PythonUserSitePackagesMapper().path())
+        user_site_path = PythonUserSitePackagesMapper().path()
+        if user_site_path.exists():
+            remote_user_site_packages_path = shared_folder_path_in_sandbox(user_site_path)
+        else:
+            remote_user_site_packages_path = ''
 
         # Launch the target script.
         commands.append(r'{} {} --disable-firewall {} {}'.format(
@@ -119,7 +123,7 @@ class OnlineSession:
         self.sandbox.config.logon_script = self._get_logon_script(self.server_address_path_in_sandbox)
         self.sandbox.config.folder_mappers.extend(extra_folder_mappers)
 
-    def connect_to_sandbox(self, timeout=30):
+    def connect_to_sandbox(self, timeout=60):
         """
         Connect to the sandbox sever.
         Waits for the creation of the shared server address file, and checks that it responds.
