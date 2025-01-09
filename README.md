@@ -37,6 +37,9 @@ tree = sandbox.rpyc.modules.subprocess.check_output(r'cmd /c tree %userprofile%\
 
 # Create an offline sandbox with a logon script.
 sandbox = winsandbox.new_sandbox(networking=False, logon_script="explorer .")
+
+# Create a sandbox with your own RAM value
+sandbox = winsandbox.new_sandbox(memory_mb=8192)
 ```
 
 Also a console script is available:
