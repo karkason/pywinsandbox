@@ -31,6 +31,9 @@ def generate_config_file(config):
             with tag('Command'):
                 text(config.logon_script)
 
+        with tag('MemoryInMB'):
+            text(config.memory_mb)
+
         _format_folder_mappers(config.folder_mappers, tag, text)
 
     return yattag.indent(document.getvalue())

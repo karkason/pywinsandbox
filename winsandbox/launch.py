@@ -11,7 +11,7 @@ if 'pytest' not in sys.modules:
 _DEFAULT_FOLDER_MAPPERS = [PythonMapper(), PythonUserSitePackagesMapper()]
 
 
-def new_sandbox(folder_mappers=None, networking=True, logon_script="", virtual_gpu=True):
+def new_sandbox(folder_mappers=None, networking=True, logon_script="", virtual_gpu=True, memory_mb="4096"):
     """
     Create a new sandbox or connect to an existing running instance.
     When networking=False:
@@ -29,7 +29,8 @@ def new_sandbox(folder_mappers=None, networking=True, logon_script="", virtual_g
     config = SandboxConfig(folder_mappers=folder_mappers,
                            networking=networking,
                            logon_script=logon_script,
-                           virtual_gpu=virtual_gpu)
+                           virtual_gpu=virtual_gpu,
+                           memory_mb=memory_mb)
     if networking:
         return OnlineSandbox(config)
     else:
